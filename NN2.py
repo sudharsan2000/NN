@@ -1,7 +1,6 @@
 import tensorflow as tf
-#from tensorflow.examples.tutorials.mnist import input_data
-#mnist = input_data.read_datasets("MNIST_data",one_hot= "True")
-import tensorflow.examples.tutorials.mnist.input_data as input_data
+from tensorflow.examples.tutorials.mnist import input_data
+mnist = input_data.read_data_sets("MNIST_data",one_hot= "True")
 
 n_nodes_hl1 = 500
 n_nodes_hl2 = 500
@@ -24,28 +23,28 @@ def neural_network_model(data):
                         'biases':tf.Variable(tf.random_normal([n_classes]))}
 	# model : (data*weights) + biases
 
-	l1 = tf.add((data*hidden_1_layer['weights']) , hidden_1_layer['biases'])
+	l1 = tf.add(tf.matmul(data,hidden_1_layer['weights']) , hidden_1_layer['biases'])
 	l1 = tf.nn.relu(l1) #rectified linear - activation fnc
 
-	l2 = tf.add((l1*hidden_2_layer['weights']) , hidden_2_layer['biases'])
+	l2 = tf.add(tf.matmul(l1,hidden_2_layer['weights']) , hidden_2_layer['biases'])
 	l2 = tf.nn.relu(l2)
 
-	l3 = tf.add((l2*hidden_3_layer['weights']) , hidden_3_layer['biases'])
+	l3 = tf.add(tf.matmul(l2,hidden_3_layer['weights']) , hidden_3_layer['biases'])
 	l3 = tf.nn.relu(l3)
 
-	output = (l3 * output_layer['weights'] ) + output_layer['biases']
+	output = tf.add(tf.matmul(l3 , output_layer['weights'] ) ,output_layer['biases'])
 
 	return output
 
 def train_neural_network(x):
         prediction = neural_network_model(x)
-        cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_ligits(prediction.y) )
+        cost = tf.reduce_mean( tf.nn.softmax_cross_entropy_with_logits(logits = prediction,labels = y) )
 
         optimizer = tf.train.AdamOptimizer().minimize(cost)
 
-        hm_epochs = 1
+        hm_epochs = 10
 
-        with tff.Session() as sess:
+        with tf.Session() as sess:
                 sess.run(tf.initialize_all_variables())
 
                 for epoch in range(hm_epochs):
