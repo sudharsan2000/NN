@@ -10,7 +10,6 @@ n_classes = 10
 batch_size = 100
 
 x= tf.placeholder('float',[None,784])  # 28x28 = 784
-
 y= tf.placeholder('float')
 
 def neural_network_model(data):
